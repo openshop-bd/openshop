@@ -1,0 +1,57 @@
+// ============================================================
+// এই ফাইলের পুরো কন্টেন্ট কপি করে বসান:
+// Firebase Console → আপনার প্রজেক্ট → Firestore Database → Rules ট্যাব → Publish
+//
+// "Missing or insufficient permissions" এরর দেখানোর মূল কারণ হলো —
+// নতুন Firestore ডাটাবেস ডিফল্টভাবে সব রিড/রাইট বন্ধ (locked mode) রাখে,
+// যতক্ষণ না আপনি নিচের রুলগুলো Firebase Console-এ গিয়ে বসিয়ে Publish করছেন।
+// এটা কোডের বাগ না — এটা Firebase কনসোলের একটা সেটিংস, যেটা এখনো করা হয়নি।
+//
+// write অ্যাক্সেস শুধুমাত্র অ্যাডমিন ইমেইলের জন্য সীমাবদ্ধ।
+// ============================================================
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == "sonalifashionbarishal@gmail.com";
+    }
+
+    match /products/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /settings/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /events/{doc} {
+      allow read: if isAdmin();
+      allow create: if true;
+    }
+    match /orders/{doc} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+    match /coupons/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /reviews/{doc} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+    match /likes/{doc} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+    match /siteLikes/{doc} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+  }
+}
