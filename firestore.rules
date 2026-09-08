@@ -1,0 +1,40 @@
+// ============================================================
+// এই ফাইলের কন্টেন্ট Firebase Console এ Firestore Database > Rules এ বসিয়ে Publish করুন
+// আপডেট: শুধু isAdmin() (এডমিন ইমেইল) দিয়েই write করা যাবে — এর আগে
+// "request.auth != null" থাকায় যেকোনো Google অ্যাকাউন্ট দিয়ে লগইন করেই
+// ডেটা বদলানো যেত, এখন সেটা বন্ধ।
+// ============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == "sonalifashionbarishal@gmail.com";
+    }
+
+    match /products/{doc} { allow read: if true; allow write: if isAdmin(); }
+    match /settings/{doc} { allow read: if true; allow write: if isAdmin(); }
+    match /events/{doc}   { allow read: if isAdmin(); allow create: if true; }
+    match /orders/{doc} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+    match /coupons/{doc} { allow read: if true; allow write: if isAdmin(); }
+    match /reviews/{doc} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+    match /likes/{doc} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+    match /siteLikes/{doc} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+  }
+}
